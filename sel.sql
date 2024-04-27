@@ -20,8 +20,8 @@ GROUP BY genre_ID;
 
 select COUNT(Track)
 from Track
-where (select name from Collection 
-where date between 2019 and 2020);
+JOIN Album ON Track.album_id = Album_id
+where relase date between 2019 and 2020
 
 SELECT name AS album_name, AVG(duration) AS avg_dur
 FROM Track
@@ -30,12 +30,9 @@ GROUP BY name;
 
 SELECT name
 FROM Executor
-WHERE name NOT IN (
-SELECT DISTINCT name
-FROM Album
-WHERE date = 2020;
+LEFT JOIN Album ON Executor.album_id = Album.id
+WHERE relase date != 2020
 
 SELECT name FROM Collection
-JOIN Track ON ID = Track.Collection_id,
-JOIN Executor ON Track.executor_id = Executor.id,
+JOIN Executor ON Collection.executor_id = Executor.id,
 WHERE name = 'Deep purple';
