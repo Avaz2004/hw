@@ -14,7 +14,7 @@ select name from Track
 where name like 'my' or name like 'мой';
 
 
-SELECT genre_ID, COUNT(executor_ID) as number_of_artists
+SELECT genre_ID, COUNT(executor_ID) as number_of_ExecutorAlbumExecutor
 FROM executorgenre 
 GROUP BY genre_ID;
 
@@ -28,11 +28,19 @@ FROM Track
 JOIN Album ON Track.album_id = Album.id
 GROUP BY name;
 
-SELECT name
-FROM Executor
-LEFT JOIN Album ON Executor.album_id = Album.id
-WHERE relase date != 2020
+SELECT *
+FROM executor
+WHERE executor_id NOT IN (
+SELECT DISTINCT executor_id
+FROM album
+WHERE relase date = 2020
+);
 
-SELECT name FROM Collection
-JOIN Executor ON Collection.executor_id = Executor.id,
-WHERE name = 'Deep purple';
+SELECT name
+FROM Album
+JOIN AlbumExecutor ON Album.AlbumID = AlbumExecutor.AlbumID
+JOIN Executor ON AlbumExecutor.ArtistID = Executor.ArtistID
+JOIN Track ON Album.AlbumID =Track.AlbumID
+JOIN TrackExecutor ON Track.TrackID = TrackExecutor.TrackID
+WHERE Executor.ArtistName = 'Deep purple';
+
