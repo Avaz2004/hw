@@ -43,4 +43,3 @@ JOIN Executor ON AlbumExecutor.ArtistID = Executor.ArtistID
 JOIN Track ON Album.AlbumID =Track.AlbumID
 JOIN TrackExecutor ON Track.TrackID = TrackExecutor.TrackID
 WHERE Executor.ArtistName = 'Deep purple';
-
