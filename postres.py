@@ -16,7 +16,7 @@ def create_db(conn):
         client_phonenumber VARCHAR(20) UNIQUE);
         """)
    
-
+   
 def add_client(conn, first_name, last_name, email, phones=None):
     with conn.cursor as cur:
         fs = input("Введите свое имя: ")
@@ -91,55 +91,70 @@ def delete_client(conn, client_id):
 
 def find_client(conn, first_name=None, last_name=None, email=None, phone=None):
     print("Для поиска информации о клиенте, пожалуйста, введите команду, где:\n "
-          "1 - найти по имени; 2 - найти по фамилии; 3 - найти по e-mail; 4 - найти по номеру телефона")
+          "first_name - найти по имени; last_name - найти по фамилии; email - найти по email; phone - найти по номеру телефона")
     while True:
         with conn.cursor() as cur:
             input_command_for_finding = int(input("Введите команду для поиска информации о клиенте: "))
-            if input_command_for_finding == 1:
-                input_name_for_finding = input("Введите имя для поиска информации о клиенте: ")
+            if input_command_for_finding == first_name:
+                first_name_for_finding = input("Введите имя для поиска информации о клиенте: ")
                 cur.execute("""
-                SELECT id, client_name, client_surname, client_email, client_phonenumber
-                FROM clients_Homework5 AS ch5
-                LEFT JOIN client_phonenumbers AS cp ON cp.id_phonenumber = ch5.id
-                WHERE client_name=%s
+                SELECT id, first_name, last_name, email, client_phonenumber
+                FROM client_db AS ch5
+                LEFT JOIN phonenumbers AS cp ON cp.id_phonenumber = ch5.id
+                WHERE first_name = first_name_for_finding
                 """)
                 print(cur.fetchall())
                 break
-            elif input_command_for_finding == 2:
-                input_surname_for_finding = input("Введите фамилию для поиска информации о клиенте: ")
+            elif input_command_for_finding == last_name:
+                last_name_for_finding = input("Введите фамилию для поиска информации о клиенте: ")
                 cur.execute("""
-                SELECT id, client_name, client_surname, client_email, client_phonenumber
-                FROM clients_Homework5 AS ch5
-                LEFT JOIN client_phonenumbers AS cp ON cp.id_phonenumber = ch5.id
-                WHERE client_surname=%s
+                SELECT id, first_name, last_name, email, client_phonenumber
+                FROM client_db AS ch5
+                LEFT JOIN phonenumbers AS cp ON cp.id_phonenumber = ch5.id
+                WHERE last_name = last_name_for_finding
                 """)
                 print(cur.fetchall())
                 break
-            elif input_command_for_finding == 3:
-                input_email_for_finding = input("Введите email для поиска информации о клиенте: ")
+            elif input_command_for_finding == email:
+                email_for_finding = input("Введите email для поиска информации о клиенте: ")
                 cur.execute("""
-                SELECT id, client_name, client_surname, client_email, client_phonenumber
-                FROM clients_Homework5 AS ch5
-                LEFT JOIN client_phonenumbers AS cp ON cp.id_phonenumber = ch5.id
-                WHERE client_email=%s
+                SELECT id, first_name, last_name, email, client_phonenumber
+                FROM client_db AS ch5
+                LEFT JOIN phonenumbers AS cp ON cp.id_phonenumber = ch5.id
+                WHERE email = email_for_finding
                 """)
                 print(cur.fetchall())
                 break
-            elif input_command_for_finding == 4:
-                input_phonenumber_for_finding = input("Введите номер телефона для поиска информации о клиенте: ")
+            elif input_command_for_finding == phone:
+                phonenumber_for_finding = input("Введите номер телефона для поиска информации о клиенте: ")
                 cur.execute("""
-                SELECT id, client_name, client_surname, client_email, client_phonenumber
-                FROM clients_Homework5 AS ch5
-                LEFT JOIN client_phonenumbers AS cp ON cp.id_phonenumber = ch5.id
-                WHERE client_phonenumber=%s
+                SELECT id, first_name, last_name, email, client_phonenumber
+                FROM clients_db AS ch5
+                LEFT JOIN phonenumbers AS cp ON cp.id_phonenumber = ch5.id
+                WHERE client_phonenumber = phone_for_finding
                 """)
                 print(cur.fetchall())
                 break
             else:
-                print("К сожалению, Вы ввели неправильную команду, пожалуйста, повторите ввод")
+                print("Неизвестная команда")
 
 
 with psycopg2.connect(database="clients_db", user="postgres", password="postgres") as conn:
-    pass  # вызывайте функции здесь
+     with conn.cursor() as cur:
+        create_db(cur)
+        add_client(cur, "Richie", "Blackmore", "Deep_purple@gmail.com")
+        add_client(cur, "James", "Dio", "DIO@gmail.com")
+        add_client(cur, "Ozzy", "Ozbourne", "Black_sabbath@gmail.com")
+        add_client(cur, "Kirk", "Hammett", "Metallica@gmail+.com")
+        add_client(cur, "Freddy", "Mercury", "Queen@gmail.com")
+        add_phone(cur, 1, "11111111")
+        add_phone(cur, 2, "222222222")
+        add_phone(cur, 3, "3333333333")
+        add_phone(cur, 4, "44444444444")
+        add_phone(cur, 5, "555555555555")
+        change_client()
+        delete_phone()
+        delete_client()
+        find_client()
 
 conn.close()
