@@ -19,19 +19,14 @@ def create_db(conn):
    
 def add_client(conn, first_name, last_name, email, phones=None):
     with conn.cursor as cur:
-        fs = input("Введите свое имя: ")
-        ls = input("Введите свою фамилию: ")
-        e = input("Введите свою почту: ")
         cur.execute("""
-        INSERT INTO clinets_db(first_name, last_name, email) VALUES(fs, ls, e);
+        INSERT INTO clinets_db(first_name, last_name, email) VALUES(first_name, last_name, email);
         """)
 
 def add_phone(conn, client_id, phone):
     with conn.cursor as cur:
-        ci = input("Введите id клиента: ")
-        cp = input("Введите номер телефона клиента: ")
         cur.execute("""
-        INSERT INTO phonenumbers(client_id, client_phonenumber) VALUES(ci, cp);
+        INSERT INTO phonenumbers(client_id, client_phonenumber) VALUES(client_id, phone);
         """)
 
 def change_client(conn, client_id, first_name=None, last_name=None, email=None, phones=None):
@@ -90,71 +85,41 @@ def delete_client(conn, client_id):
         """)
 
 def find_client(conn, first_name=None, last_name=None, email=None, phone=None):
-    print("Для поиска информации о клиенте, пожалуйста, введите команду, где:\n "
-          "first_name - найти по имени; last_name - найти по фамилии; email - найти по email; phone - найти по номеру телефона")
-    while True:
+    first_name_for_finding = input("Для поиска клиента,пожалуйста,введите его имя(Если не знаете то нажмите enter): ")
+    last_name_for_finding = input("Для поиска клиента,пожалуйста,введите его фамилию(Если не знаете то нажмите enter): ")
+    email_for_finding = input("Для поиска клиента,пожалуйста,введите его почту(Если не знаете то нажмите enter): ")
+    phonenumber_for_finding = input("Для поиска клиента,пожалуйста,введите его телефон(Если не знаете то нажмите enter): ")
+
+    with conn.cursor() as cur:
+        if first_name_for_finding == "" and last_name_for_finding == "" and email_for_finding == "" and phonenumber_for_finding == "":
+            print("Недостаточно информации для поиска клиента")
+        else:
+            cur.execute("""
+            SELECT *
+            FROM client_db AS ch5
+            WHERE first_name = first_name_for_finding OR last_name = last_name_for_finding OR email = email_for_finding OR phonenumber = phonenumber_for_finding
+            """)
+        print(cur.fetchall())
+
+
+if __name__ == "__main__":
+    with psycopg2.connect(database="clients_db", user="postgres", password="postgres") as conn:
         with conn.cursor() as cur:
-            input_command_for_finding = int(input("Введите команду для поиска информации о клиенте: "))
-            if input_command_for_finding == first_name:
-                first_name_for_finding = input("Введите имя для поиска информации о клиенте: ")
-                cur.execute("""
-                SELECT id, first_name, last_name, email, client_phonenumber
-                FROM client_db AS ch5
-                LEFT JOIN phonenumbers AS cp ON cp.id_phonenumber = ch5.id
-                WHERE first_name = first_name_for_finding
-                """)
-                print(cur.fetchall())
-                break
-            elif input_command_for_finding == last_name:
-                last_name_for_finding = input("Введите фамилию для поиска информации о клиенте: ")
-                cur.execute("""
-                SELECT id, first_name, last_name, email, client_phonenumber
-                FROM client_db AS ch5
-                LEFT JOIN phonenumbers AS cp ON cp.id_phonenumber = ch5.id
-                WHERE last_name = last_name_for_finding
-                """)
-                print(cur.fetchall())
-                break
-            elif input_command_for_finding == email:
-                email_for_finding = input("Введите email для поиска информации о клиенте: ")
-                cur.execute("""
-                SELECT id, first_name, last_name, email, client_phonenumber
-                FROM client_db AS ch5
-                LEFT JOIN phonenumbers AS cp ON cp.id_phonenumber = ch5.id
-                WHERE email = email_for_finding
-                """)
-                print(cur.fetchall())
-                break
-            elif input_command_for_finding == phone:
-                phonenumber_for_finding = input("Введите номер телефона для поиска информации о клиенте: ")
-                cur.execute("""
-                SELECT id, first_name, last_name, email, client_phonenumber
-                FROM clients_db AS ch5
-                LEFT JOIN phonenumbers AS cp ON cp.id_phonenumber = ch5.id
-                WHERE client_phonenumber = phone_for_finding
-                """)
-                print(cur.fetchall())
-                break
-            else:
-                print("Неизвестная команда")
+            create_db(cur)
+            add_client(cur, "Richie", "Blackmore", "Deep_purple@gmail.com")
+            add_client(cur, "James", "Dio", "DIO@gmail.com")
+            add_client(cur, "Ozzy", "Ozbourne", "Black_sabbath@gmail.com")
+            add_client(cur, "Kirk", "Hammett", "Metallica@gmail+.com")
+            add_client(cur, "Freddy", "Mercury", "Queen@gmail.com")
+            add_phone(cur, 1, "11111111")
+            add_phone(cur, 2, "222222222")
+            add_phone(cur, 3, "3333333333")
+            add_phone(cur, 4, "44444444444")
+            add_phone(cur, 5, "555555555555")
+            change_client()
+            delete_phone()
+            delete_client()
+            find_client()
 
-
-with psycopg2.connect(database="clients_db", user="postgres", password="postgres") as conn:
-     with conn.cursor() as cur:
-        create_db(cur)
-        add_client(cur, "Richie", "Blackmore", "Deep_purple@gmail.com")
-        add_client(cur, "James", "Dio", "DIO@gmail.com")
-        add_client(cur, "Ozzy", "Ozbourne", "Black_sabbath@gmail.com")
-        add_client(cur, "Kirk", "Hammett", "Metallica@gmail+.com")
-        add_client(cur, "Freddy", "Mercury", "Queen@gmail.com")
-        add_phone(cur, 1, "11111111")
-        add_phone(cur, 2, "222222222")
-        add_phone(cur, 3, "3333333333")
-        add_phone(cur, 4, "44444444444")
-        add_phone(cur, 5, "555555555555")
-        change_client()
-        delete_phone()
-        delete_client()
-        find_client()
 
 conn.close()
